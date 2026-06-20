@@ -18,9 +18,11 @@ export default function OptimisationHubPage() {
         <Link href="/passport" className="text-[var(--color-ink-2)] hover:text-[var(--color-ink)] transition-colors">
           <ArrowLeft className="w-6 h-6" />
         </Link>
-        <h1 className="text-[var(--text-3xl)] font-bold text-[var(--color-ink)] tracking-tight">
-          Optimisation Hub
-        </h1>
+        {step === 2 && (
+          <h1 className="text-[var(--text-3xl)] font-bold text-[var(--color-ink)] tracking-tight">
+            Optimisation Hub
+          </h1>
+        )}
       </div>
 
       {step === 1 ? (
@@ -135,6 +137,74 @@ export default function OptimisationHubPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Network Visual Map */}
+          <div className="bg-[#f8fafc] border border-[var(--color-border)] rounded-[var(--radius-lg)] shadow-sm flex flex-col items-center min-h-[500px] relative overflow-hidden">
+            
+            <div className="absolute top-6 text-center z-20">
+              <h3 className="text-[11px] font-bold text-[var(--color-ink-2)] tracking-[0.2em] uppercase">
+                Corporate Solar Energy Network Allocation
+              </h3>
+            </div>
+
+            {/* SVG Connecting Lines */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+              <defs>
+                <linearGradient id="flow-left" x1="100%" y1="100%" x2="0%" y2="0%">
+                  <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="var(--color-success)" stopOpacity="0.8" />
+                </linearGradient>
+                <linearGradient id="flow-right" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="var(--color-success)" stopOpacity="0.8" />
+                </linearGradient>
+              </defs>
+              {/* Line to Branch B */}
+              <line x1="50%" y1="45%" x2="25%" y2="25%" stroke="url(#flow-left)" strokeWidth="3" strokeDasharray="8 8" className="animate-pulse" />
+              {/* Line to Branch C */}
+              <line x1="50%" y1="45%" x2="75%" y2="25%" stroke="url(#flow-right)" strokeWidth="3" strokeDasharray="8 8" className="animate-pulse" />
+              {/* Line to Branch D */}
+              <line x1="50%" y1="45%" x2="50%" y2="85%" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="6 6" />
+            </svg>
+
+            {/* Branch B (Top Left) */}
+            <div className="absolute top-[18%] left-[8%] md:left-[15%] bg-white border border-[var(--color-border)] shadow-md rounded-[var(--radius-lg)] p-5 flex flex-col items-center min-w-[160px] z-10">
+              <Building2 className="w-6 h-6 text-[var(--color-ink-2)] mb-3" />
+              <span className="font-bold text-[var(--text-lg)] text-[var(--color-ink)]">Branch B</span>
+              <span className="text-[var(--text-sm)] font-bold text-[var(--color-success)] mt-1">+ RM {demoOptimisation.branches[1]?.savings_rm.toFixed(0)} Offset</span>
+              <span className="text-[var(--text-xs)] text-[var(--color-ink-3)] font-medium mt-1">
+                {Math.round((demoOptimisation.branches[1]?.allocated_surplus_kwh / demoOptimisation.total_surplus_kwh) * 100)}% Allocation
+              </span>
+            </div>
+
+            {/* Branch C (Top Right) */}
+            <div className="absolute top-[18%] right-[8%] md:right-[15%] bg-white border border-[var(--color-border)] shadow-md rounded-[var(--radius-lg)] p-5 flex flex-col items-center min-w-[160px] z-10">
+              <Building2 className="w-6 h-6 text-[var(--color-ink-2)] mb-3" />
+              <span className="font-bold text-[var(--text-lg)] text-[var(--color-ink)]">Branch C</span>
+              <span className="text-[var(--text-sm)] font-bold text-[var(--color-success)] mt-1">+ RM {demoOptimisation.branches[2]?.savings_rm.toFixed(0)} Offset</span>
+              <span className="text-[var(--text-xs)] text-[var(--color-ink-3)] font-medium mt-1">
+                {Math.round((demoOptimisation.branches[2]?.allocated_surplus_kwh / demoOptimisation.total_surplus_kwh) * 100)}% Allocation
+              </span>
+            </div>
+
+            {/* Center Node (Branch A / HQ) */}
+            <div className="absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center justify-center w-40 h-40 bg-white rounded-full border-[3px] border-[var(--color-accent)] shadow-xl">
+              <Zap className="w-10 h-10 text-[var(--color-accent)] mb-2" />
+              <span className="font-bold text-[var(--text-xl)] text-[var(--color-ink)]">Branch A</span>
+              <span className="text-[var(--text-xs)] font-medium text-[var(--color-ink-2)] mt-0.5">Solar Roof</span>
+              <div className="absolute top-2 -right-2 bg-[var(--color-success)] text-white text-[12px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                HQ
+              </div>
+            </div>
+
+            {/* Branch D (Bottom Center) */}
+            <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 bg-white border border-[var(--color-border)] shadow-md rounded-[var(--radius-lg)] p-5 flex flex-col items-center min-w-[160px] z-10">
+              <Building2 className="w-6 h-6 text-[var(--color-ink-3)] mb-3" />
+              <span className="font-bold text-[var(--text-lg)] text-[var(--color-ink-2)]">Branch D</span>
+              <span className="text-[var(--text-xs)] font-medium text-[var(--color-ink-3)] mt-1">No Offset Needed</span>
+              <span className="text-[var(--text-xs)] text-[var(--color-ink-3)] mt-0.5">Low Base Load</span>
             </div>
           </div>
 

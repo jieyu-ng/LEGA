@@ -53,53 +53,55 @@ export default function PassportPage() {
   return (
     <div className="max-w-[var(--page-width)] mx-auto px-6 pt-12 pb-24">
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-64 flex-shrink-0 space-y-6">
-          <div>
-            <h1 className="text-[var(--text-2xl)] font-bold text-[var(--color-ink)] leading-tight">
-              {profileName}
-            </h1>
-            <p className="text-[var(--text-sm)] text-[var(--color-ink-2)] mt-1">
-              {isBusiness ? "Business Energy Passport" : "Home Energy Passport"}
-            </p>
-          </div>
-
-          <div className="pt-4 border-t border-[var(--color-border)]">
-            <h3 className="text-[var(--text-sm)] font-bold text-[var(--color-ink)] mb-3">
-              Energy Snapshot
-            </h3>
-            <ul className="text-[var(--text-sm)] text-[var(--color-ink-2)] space-y-3">
-              <li className="flex justify-between border-b border-[var(--color-border)] pb-2">
-                <span>{isBusiness ? "Daily generation:" : "Daily usage offset:"}</span>
-                <span className="font-medium text-[var(--color-ink)]">30.4 kWh</span>
-              </li>
-              <li className="flex justify-between border-b border-[var(--color-border)] pb-2">
-                <span>{isBusiness ? "Self-consumed:" : "Self-used energy:"}</span>
-                <span className="font-medium text-[var(--color-ink)]">22.1 kWh</span>
-              </li>
-              <li className="flex justify-between border-b border-[var(--color-border)] pb-2">
-                <span>{isBusiness ? "Surplus energy:" : "Flexible savings potential:"}</span>
-                <span className="font-medium text-[var(--color-accent)]">8.3 kWh</span>
-              </li>
-            </ul>
-          </div>
-
-          {hasCompletedQuestionnaire && (
-            <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-4 shadow-sm">
-              <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Flexibility Preferences</p>
-              <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">
-                Delay loads: <span className="font-medium text-[var(--color-ink)]">{willingToDelay ? "Yes" : "No"}</span>
-              </p>
-              <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)]">
-                Smart devices: <span className="font-medium text-[var(--color-ink)]">{hasSmartPlugs ? "Available" : "Manual only"}</span>
-              </p>
-              <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)]">
-                Goal: <span className="font-medium text-[var(--color-ink)]">{optimizationLabel}</span>
+        {!isBusiness && (
+          <div className="w-full md:w-64 flex-shrink-0 space-y-6">
+            <div>
+              <h1 className="text-[var(--text-2xl)] font-bold text-[var(--color-ink)] leading-tight">
+                {profileName}
+              </h1>
+              <p className="text-[var(--text-sm)] text-[var(--color-ink-2)] mt-1">
+                Home Energy Passport
               </p>
             </div>
-          )}
-        </div>
 
-        <div className="flex-1 space-y-8">
+            <div className="pt-4 border-t border-[var(--color-border)]">
+              <h3 className="text-[var(--text-sm)] font-bold text-[var(--color-ink)] mb-3">
+                Energy Snapshot
+              </h3>
+              <ul className="text-[var(--text-sm)] text-[var(--color-ink-2)] space-y-3">
+                <li className="flex justify-between border-b border-[var(--color-border)] pb-2">
+                  <span>Daily usage offset:</span>
+                  <span className="font-medium text-[var(--color-ink)]">30.4 kWh</span>
+                </li>
+                <li className="flex justify-between border-b border-[var(--color-border)] pb-2">
+                  <span>Self-used energy:</span>
+                  <span className="font-medium text-[var(--color-ink)]">22.1 kWh</span>
+                </li>
+                <li className="flex justify-between border-b border-[var(--color-border)] pb-2">
+                  <span>Flexible savings potential:</span>
+                  <span className="font-medium text-[var(--color-accent)]">8.3 kWh</span>
+                </li>
+              </ul>
+            </div>
+
+            {hasCompletedQuestionnaire && (
+              <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-4 shadow-sm">
+                <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Flexibility Preferences</p>
+                <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">
+                  Delay loads: <span className="font-medium text-[var(--color-ink)]">{willingToDelay ? "Yes" : "No"}</span>
+                </p>
+                <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)]">
+                  Smart devices: <span className="font-medium text-[var(--color-ink)]">{hasSmartPlugs ? "Available" : "Manual only"}</span>
+                </p>
+                <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)]">
+                  Goal: <span className="font-medium text-[var(--color-ink)]">{optimizationLabel}</span>
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`flex-1 space-y-8 ${isBusiness ? 'max-w-4xl mx-auto w-full' : ''}`}>
           <div className="bg-white border-2 border-[var(--color-success)] rounded-[var(--radius-lg)] p-8 shadow-sm">
             <h3 className="text-[var(--text-2xl)] font-bold text-[var(--color-ink)] mb-4 flex items-center">
               <Cpu className="w-8 h-8 mr-3 text-[var(--color-success)]" />
@@ -203,33 +205,25 @@ export default function PassportPage() {
                   </Link>
 
                   {isBusiness && (
-                    <div className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-4 bg-[var(--color-paper-2)] shadow-sm flex flex-col justify-between">
+                    <Link href="/optimisation" className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-4 bg-white shadow-sm flex flex-col justify-between hover:border-[var(--color-accent)] hover:bg-[#eff6ff]/50 transition-all cursor-pointer group">
                       <div>
-                        <div className="flex items-center mb-1">
-                          <Box className="w-4 h-4 text-[var(--color-ink-2)] mr-2" />
-                          <h3 className="font-bold text-[var(--text-xs)] text-[var(--color-ink)]">3. Branch Allocation (NOVA)</h3>
+                        <div className="flex items-center mb-1 justify-between">
+                          <div className="flex items-center">
+                            <Box className="w-4 h-4 text-[var(--color-accent)] mr-2" />
+                            <h3 className="font-bold text-[var(--text-xs)] text-[var(--color-ink)]">3. Multi-Branch Context</h3>
+                          </div>
+                          <ChevronRight className="w-3 h-3 text-[var(--color-accent)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                         </div>
                         <p className="text-[var(--text-xs)] text-[var(--color-ink-2)] mt-1">
-                          Route export credits to designated branches via virtual allocation.
+                          Configure multi-branch surplus allocation (NOVA).
                         </p>
                       </div>
                       <div className="mt-3 pt-2 border-t border-[var(--color-border)]">
-                        <span className="text-[9px] font-medium text-[var(--color-ink-3)] uppercase tracking-wider">Result:</span>
-                        <p className="text-[var(--text-xs)] font-medium text-[var(--color-ink)] mt-0.5">Offsets high-bill branches</p>
+                        <span className="text-[9px] font-medium text-[var(--color-ink-3)] uppercase tracking-wider">Action:</span>
+                        <p className="text-[var(--text-xs)] font-medium text-[var(--color-accent)] mt-0.5">Open Workspace</p>
                       </div>
-                    </div>
+                    </Link>
                   )}
-                </div>
-
-                <div className="pt-6 border-t border-[var(--color-border)] flex items-center justify-between">
-                  <div className="text-[var(--text-sm)] text-[var(--color-ink-2)]">
-                    Use these recommendations to build a practical schedule inside the optimisation workspace.
-                  </div>
-                  <Link href="/optimisation">
-                    <button className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-6 py-2.5 rounded-[var(--radius-md)] text-[var(--text-sm)] font-medium shadow-sm transition-colors flex items-center">
-                      Open Optimisation Hub <ArrowRight className="w-4 h-4 ml-2" />
-                    </button>
-                  </Link>
                 </div>
               </section>
             ) : (
