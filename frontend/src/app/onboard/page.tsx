@@ -101,7 +101,8 @@ export default function OnboardPage() {
 
     if (accountType === "business") {
       setTimeout(() => {
-        router.push("/passport");
+        setIsSubmitting(false);
+        setQStep(2);
       }, 1500);
       return;
     }
@@ -178,7 +179,9 @@ export default function OnboardPage() {
 
 
         {accountType === "business" ? (
-          <>
+          <div className="space-y-6 pt-4">
+            {qStep === 1 ? (
+              <>
             <div className="space-y-2 pt-4">
               <h1 className="text-[var(--text-3xl)] font-bold text-[var(--color-ink)] tracking-tight">
                 Business Energy Context
@@ -277,7 +280,81 @@ export default function OnboardPage() {
                 </button>
               </div>
             </form>
-          </>
+              </>
+            ) : (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h1 className="text-[var(--text-3xl)] font-bold text-[var(--color-ink)] tracking-tight">
+                    Business Energy Diagnosis
+                  </h1>
+                  <p className="text-[var(--text-base)] text-[var(--color-ink-2)]">
+                    This result combines TNB Commercial Tariffs, industry benchmarking, and root-cause analysis tailored to your operations.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Financial Diagnosis</p>
+                    <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">At 12,500 kWh, your usage is 15% above the industry benchmark for commercial properties. High maximum demand charges (45 kW) are significantly inflating your bill.</p>
+                  </div>
+                  <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Tariff Insight</p>
+                    <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">TNB Commercial Tariff B applies to your profile. The Maximum Demand charge of RM 30.20/kW is adding RM 1,359 to your bill, independent of actual kWh consumed.</p>
+                    <div className="mt-3 rounded-[var(--radius-md)] bg-[var(--color-paper-2)] p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Peak Demand Gap</p>
+                      <p className="mt-1 text-[var(--text-base)] font-bold text-[var(--color-ink)]">
+                        12 kW excess
+                      </p>
+                    </div>
+                  </div>
+                  <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Benchmark Insight</p>
+                    <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">Similar businesses (laundromats, 9am-6pm operations) use 10,800 kWh/month. Your 15% excess highlights inefficiency in thermal and motor loads.</p>
+                  </div>
+                  <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Likely Root Cause</p>
+                    <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">Heavy heating/drying equipment running concurrently during peak tariff periods is driving up both consumption and maximum demand spikes.</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                  <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Why This Recommendation</p>
+                    <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">
+                      We ranked this action highest because flattening your demand curve directly reduces your RM 30.20/kW penalty.
+                    </p>
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                      <div className="rounded-[var(--radius-md)] bg-[var(--color-paper-2)] p-3">
+                        <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Primary Driver</p>
+                        <p className="mt-1 font-medium text-[var(--color-ink)] truncate">Industrial Dryers & HVAC</p>
+                      </div>
+                      <div className="rounded-[var(--radius-md)] bg-[#ecfdf5] border border-[#a7f3d0] p-3">
+                        <p className="text-[10px] uppercase tracking-wider text-[#065f46]">Essential Savings Mode</p>
+                        <p className="mt-1 font-bold text-[#059669]">RM 450/mo at risk</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-[var(--radius-lg)] border-2 border-[var(--color-accent)] bg-white p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse"></div>
+                        <p className="text-[10px] uppercase tracking-wider font-bold text-[var(--color-accent)]">Best Next Action</p>
+                      </div>
+                      <p className="text-[var(--text-sm)] font-medium text-[var(--color-ink)]">
+                        Shift flexible washing cycles and heating operations to off-peak periods or peak solar generation hours to flatten your demand curve.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-[var(--color-border)]">
+                  <button onClick={() => router.push("/passport")} className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-6 py-2.5 rounded-[var(--radius-md)] text-[var(--text-sm)] font-medium shadow-sm transition-colors">
+                    Continue to Energy Passport
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="space-y-6 pt-4">
             {qStep === 1 ? (
