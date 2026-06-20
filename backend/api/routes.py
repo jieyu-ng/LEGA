@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks, File, UploadFile
 from pydantic import BaseModel
 from typing import List, Dict, Any
 
@@ -24,14 +24,16 @@ def create_case(req: CreateCaseRequest):
     return {"case_id": case_id}
 
 @router.post("/cases/{case_id}/extract", response_model=DocumentExtractionResponse)
-def extract_document(case_id: str):
+async def extract_document(case_id: str, file: UploadFile = File(...)):
     case = orchestrator.get_case(case_id)
     if not case:
         raise HTTPException(status_code=404, detail="Case not found")
         
-    # Using mock agent
+    contents = await file.read()
+    
+    # Using real/mock agent
     doc_agent = MockDocumentIntelligenceAgent()
-    extraction_result = doc_agent.extract_bill("dummy_path")
+    extraction_result = doc_agent.extract_bill(file_content=contents, content_type=file.content_type)
     
     # Store extracted fields in case
     case["extracted_fields"] = extraction_result["fields"]

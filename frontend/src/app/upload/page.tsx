@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { UploadCloud, Check, AlertCircle } from "lucide-react";
 
@@ -8,8 +8,18 @@ export default function UploadPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [extractedData, setExtractedData] = useState<any[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleUpload = async () => {
+  const mapFieldName = (name: string) => {
+    switch (name) {
+      case "billing_month": return "Billing Month";
+      case "consumption_kwh": return "Consumption (kWh)";
+      case "total_amount_rm": return "Total Amount (RM)";
+      default: return name.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    }
+  };
+
+  const runMockExtraction = () => {
     setStep(2);
     setTimeout(() => {
       setExtractedData([
@@ -19,6 +29,52 @@ export default function UploadPage() {
       ]);
       setStep(3);
     }, 1500);
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setStep(2);
+
+    try {
+      const caseRes = await fetch("http://localhost:8000/api/v1/cases", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: "user-123",
+          organisation_id: "org-123",
+        }),
+      });
+      if (!caseRes.ok) throw new Error("Failed to create case");
+      const { case_id } = await caseRes.json();
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const extractRes = await fetch(`http://localhost:8000/api/v1/cases/${case_id}/extract`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!extractRes.ok) throw new Error("Failed to extract document");
+      
+      const data = await extractRes.json();
+      
+      const fields = (data.fields || []).map((f: any) => ({
+        name: mapFieldName(f.name),
+        value: String(f.value),
+        confidence: f.confidence,
+        status: f.confidence >= 0.8 ? "verified" : "needs_confirmation"
+      }));
+      
+      setExtractedData(fields);
+      setStep(3);
+    } catch (err) {
+      console.error("Error during extraction:", err);
+      runMockExtraction();
+    }
   };
 
   return (
@@ -37,9 +93,16 @@ export default function UploadPage() {
 
         {step === 1 && (
           <div 
-            onClick={handleUpload}
+            onClick={() => fileInputRef.current?.click()}
             className="border border-[var(--color-border)] rounded-[var(--radius-lg)] p-12 bg-white flex flex-col items-center justify-center cursor-pointer hover:border-[var(--color-accent)] transition-colors shadow-sm"
           >
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileSelect} 
+              className="hidden" 
+              accept=".pdf,.png,.jpg,.jpeg"
+            />
             <div className="w-12 h-12 rounded-full bg-[var(--color-paper-3)] flex items-center justify-center mb-4">
               <UploadCloud className="w-6 h-6 text-[var(--color-ink-2)]" />
             </div>

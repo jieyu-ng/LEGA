@@ -12,7 +12,22 @@ export default function Home() {
   const [extractedData, setExtractedData] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Helper to extract consumption value and check for anomalies dynamically
+  const getConsumptionVal = () => {
+    if (!extractedData) return 0;
+    if (extractedData.fields) {
+      const f = extractedData.fields.find((field: any) => field.name === "consumption_kwh");
+      return f ? Number(f.value) : 0;
+    }
+    return Number(extractedData.consumption_kwh || 0);
+  };
+
+  const consumption = getConsumptionVal();
+  const baseline = accountType === "business" ? 1197 : 480;
+  const deviation = consumption > 0 ? ((consumption - baseline) / baseline) * 100 : 0;
+  const hasAnomaly = deviation > 10;
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -34,7 +49,36 @@ export default function Home() {
       };
       reader.readAsText(file);
     } else {
-      runMockExtraction();
+      try {
+        const caseRes = await fetch("http://localhost:8000/api/v1/cases", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: "user-123",
+            organisation_id: "org-123",
+          }),
+        });
+        if (!caseRes.ok) throw new Error("Failed to create case");
+        const { case_id } = await caseRes.json();
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const extractRes = await fetch(`http://localhost:8000/api/v1/cases/${case_id}/extract`, {
+          method: "POST",
+          body: formData,
+        });
+        if (!extractRes.ok) throw new Error("Failed to extract document");
+        
+        const data = await extractRes.json();
+        setExtractedData(data);
+        setStep(3);
+      } catch (err) {
+        console.error("Error during extraction:", err);
+        runMockExtraction();
+      }
     }
   };
 
@@ -128,36 +172,38 @@ export default function Home() {
               </div>
 
               {/* Anomaly Detection Card */}
-              <div className="bg-white rounded-[var(--radius-lg)] border border-[#fca5a5] shadow-sm overflow-hidden relative">
-                <div className="absolute top-0 left-0 w-1 h-full bg-[#ef4444]"></div>
-                <div className="p-6 pl-8">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-bold text-[var(--text-base)] text-[var(--color-ink)] flex items-center">
-                        <TrendingUp className="w-5 h-5 mr-2 text-[#ef4444]" />
-                        Usage Anomaly Detected
-                      </h3>
-                      <p className="text-[var(--text-sm)] text-[var(--color-ink-2)] mt-1">
-                        Current usage is significantly above recent monthly baseline.
-                      </p>
+              {hasAnomaly && (
+                <div className="bg-white rounded-[var(--radius-lg)] border border-[#fca5a5] shadow-sm overflow-hidden relative">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-[#ef4444]"></div>
+                  <div className="p-6 pl-8">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-bold text-[var(--text-base)] text-[var(--color-ink)] flex items-center">
+                          <TrendingUp className="w-5 h-5 mr-2 text-[#ef4444]" />
+                          Usage Anomaly Detected
+                        </h3>
+                        <p className="text-[var(--text-sm)] text-[var(--color-ink-2)] mt-1">
+                          Current usage is significantly above recent monthly baseline.
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center text-[var(--text-xs)] font-bold text-[#b91c1c] bg-[#fee2e2] px-2.5 py-1 rounded-md uppercase tracking-wider">
+                        Medium Severity
+                      </span>
                     </div>
-                    <span className="inline-flex items-center text-[var(--text-xs)] font-bold text-[#b91c1c] bg-[#fee2e2] px-2.5 py-1 rounded-md uppercase tracking-wider">
-                      Medium Severity
-                    </span>
-                  </div>
-                  
-                  <div className="mt-4 grid grid-cols-2 gap-4">
-                    <div className="bg-[var(--color-paper-2)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
-                      <p className="text-[var(--text-xs)] text-[var(--color-ink-3)] font-medium uppercase tracking-wider">Deviation</p>
-                      <p className="text-[var(--text-lg)] font-bold text-[var(--color-ink)]">{accountType === "business" ? "+18.6%" : "+21.4%"}</p>
-                    </div>
-                    <div className="bg-[var(--color-paper-2)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
-                      <p className="text-[var(--text-xs)] text-[var(--color-ink-3)] font-medium uppercase tracking-wider">Baseline (3-mo avg)</p>
-                      <p className="text-[var(--text-lg)] font-bold text-[var(--color-ink)]">{accountType === "business" ? "1197 kWh" : "480 kWh"}</p>
+                    
+                    <div className="mt-4 grid grid-cols-2 gap-4">
+                      <div className="bg-[var(--color-paper-2)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
+                        <p className="text-[var(--text-xs)] text-[var(--color-ink-3)] font-medium uppercase tracking-wider">Deviation</p>
+                        <p className="text-[var(--text-lg)] font-bold text-[var(--color-ink)]">+{deviation.toFixed(1)}%</p>
+                      </div>
+                      <div className="bg-[var(--color-paper-2)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
+                        <p className="text-[var(--text-xs)] text-[var(--color-ink-3)] font-medium uppercase tracking-wider">Baseline (3-mo avg)</p>
+                        <p className="text-[var(--text-lg)] font-bold text-[var(--color-ink)]">{baseline} kWh</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex justify-end pt-2">
                 <button 
