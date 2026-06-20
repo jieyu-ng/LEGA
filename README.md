@@ -47,7 +47,7 @@
 - Community Matching Engine
 - OR-Tools Optimisation Engine
 - Risk & Audit Engine
-- 
+
 ### Architecture
 - Decoupled Frontend ↔ Backend
 - RESTful APIs
