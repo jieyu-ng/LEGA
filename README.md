@@ -22,25 +22,36 @@
 ## Technologies used
 
 ### Frontend
-- **Next.js** with TypeScript
-- **React** for component architecture
-- **Tailwind CSS** for styling
-- **Recharts** for data visualisation
-- **Mapbox GL JS** for community mapping
-- **React Query** for state synchronisation
+- Next.js 16.2
+- TypeScript
+- Tailwind CSS
+- Shadcn UI
+- Recharts
 
 ### Backend
-- **Python FastAPI** with Pydantic schemas
-- **PostgreSQL** / **Supabase** for database
-- **Object Storage** for document management
-- **WebSocket** / **Server-Sent Events** for agent progress updates
-- **Pytest** for testing
+- FastAPI
+- Python
+- SQLAlchemy
+- Pydantic
+- Uvicorn
+  
+### Database
+- SQLite (MVP)
+- SQLAlchemy ORM
 
-### AI and Machine Learning
-- **Grafilab Qwen3-VL-Flash** for bill document understanding
-- **Grafilab Qwen3.6-Flash** for structured business interpretation and explanations
-- **XGBoost / LightGBM** for demand forecasting
-- **pvlib** for solar generation modelling
+### AI & Optimisation Layer
+- Multi-Agent Orchestration
+- Document Intelligence Engine
+- Energy Analysis Engine
+- Flexibility Passport Engine
+- Community Matching Engine
+- OR-Tools Optimisation Engine
+- Risk & Audit Engine
+- 
+### Architecture
+- Decoupled Frontend ↔ Backend
+- RESTful APIs
+- Real-time Agent Workflow Pipeline
 
 ---
 
