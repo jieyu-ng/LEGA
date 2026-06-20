@@ -18,8 +18,11 @@ const demoAiAdvice = {
   acConsumptionPercentage: 45,
   baseBillRm: 320,
   peakLoadTime: "evening",
-  advice:
-    "Shift your water heating to off-peak daylight hours (10am-2pm). If you adopt a 6kWp solar system, this simple shift will offset an additional RM 60/month.",
+  advices: [
+    "Your cooling equipment is the biggest driver of your bill. Before buying new ACs, simply raising the thermostat by 1-2 degrees can drastically cut costs.",
+    "Shift your heavy washing or drying cycles to the middle of the day to take advantage of the cheapest energy hours when solar generation peaks.",
+    "Small changes add up. Turning off standby equipment at night can effortlessly reduce your wasted baseload energy."
+  ],
 };
 
 export default function PassportPage() {
@@ -97,21 +100,29 @@ export default function PassportPage() {
         </div>
 
         <div className="flex-1 space-y-8">
-          <div className="bg-white border border-[var(--color-success)] rounded-[var(--radius-lg)] p-6 shadow-sm">
-            <h3 className="text-[var(--text-xl)] font-bold text-[var(--color-ink)] mb-4 flex items-center">
-              <Cpu className="w-6 h-6 mr-3 text-[var(--color-success)]" />
+          <div className="bg-white border-2 border-[var(--color-success)] rounded-[var(--radius-lg)] p-8 shadow-sm">
+            <h3 className="text-[var(--text-2xl)] font-bold text-[var(--color-ink)] mb-4 flex items-center">
+              <Cpu className="w-8 h-8 mr-3 text-[var(--color-success)]" />
               Analysis Complete
             </h3>
-            <div className="text-[var(--text-base)] text-[var(--color-ink-2)] space-y-4">
+            <div className="text-[var(--text-lg)] text-[var(--color-ink-2)] space-y-6">
               <p className="leading-relaxed">
                 Your AC-related load is estimated to account for about{" "}
                 <strong>{demoAiAdvice.acConsumptionPercentage}% of a RM {demoAiAdvice.baseBillRm} monthly bill</strong>.
                 {" "}Right now, your highest demand still clusters around the {demoAiAdvice.peakLoadTime}, which creates the clearest savings opportunity.
               </p>
-              <div className="p-4 bg-[#ecfdf5] border border-[#a7f3d0] rounded-[var(--radius-md)]">
-                <p className="text-[var(--text-sm)] font-medium text-[#065f46]">
-                  Advice: {demoAiAdvice.advice}
+              <div className="p-5 bg-[#ecfdf5] border border-[#a7f3d0] rounded-[var(--radius-md)]">
+                <p className="text-[var(--text-base)] font-bold text-[#065f46] mb-3">
+                  AI Actionable Advice:
                 </p>
+                <ul className="space-y-3">
+                  {demoAiAdvice.advices.map((advice, idx) => (
+                    <li key={idx} className="flex items-start text-[var(--text-base)] text-[#065f46]">
+                      <span className="mr-2 mt-1 text-[#059669]">•</span>
+                      <span>{advice}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
@@ -137,74 +148,74 @@ export default function PassportPage() {
                         setStep(2);
                       }
                     }}
-                    className={`border rounded-[var(--radius-md)] p-5 shadow-sm flex flex-col justify-between relative overflow-hidden transition-all ${
+                    className={`border rounded-[var(--radius-md)] p-4 shadow-sm flex flex-col justify-between relative overflow-hidden transition-all ${
                       hasCompletedQuestionnaire
                         ? "border-[var(--color-accent)] bg-white"
                         : "cursor-pointer border-dashed border-[var(--color-accent)] bg-[var(--color-accent)]/5 hover:bg-[var(--color-accent)]/10 group"
                     }`}
                   >
                     {hasCompletedQuestionnaire && (
-                      <div className="absolute top-0 right-0 bg-[var(--color-accent)] text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-bl-md">
+                      <div className="absolute top-0 right-0 bg-[var(--color-accent)] text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider rounded-bl-md">
                         Optimal
                       </div>
                     )}
                     <div>
-                      <div className="flex items-center mb-2 justify-between">
+                      <div className="flex items-center mb-1 justify-between">
                         <div className="flex items-center">
-                          <RefreshCw className="w-5 h-5 text-[var(--color-accent)] mr-2" />
-                          <h3 className="font-bold text-[var(--text-sm)] text-[var(--color-ink)]">1. Shift Equipment</h3>
+                          <RefreshCw className="w-4 h-4 text-[var(--color-accent)] mr-2" />
+                          <h3 className="font-bold text-[var(--text-xs)] text-[var(--color-ink)]">1. Shift Equipment</h3>
                         </div>
                         {!hasCompletedQuestionnaire && (
-                          <ChevronRight className="w-4 h-4 text-[var(--color-accent)] group-hover:translate-x-1 transition-transform" />
+                          <ChevronRight className="w-3 h-3 text-[var(--color-accent)] group-hover:translate-x-1 transition-transform" />
                         )}
                       </div>
-                      <p className={`text-[var(--text-sm)] mt-2 ${hasCompletedQuestionnaire ? "text-[var(--color-ink-2)]" : "text-[var(--color-accent)] font-medium"}`}>
+                      <p className={`text-[var(--text-xs)] mt-1 ${hasCompletedQuestionnaire ? "text-[var(--color-ink-2)]" : "text-[var(--color-accent)] font-medium"}`}>
                         {hasCompletedQuestionnaire
                           ? configuredShiftCopy
                           : "Tell us how flexible your load really is so we can tune this strategy to your actual routine."}
                       </p>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-[var(--color-border)]">
-                      <span className="text-[var(--text-xs)] font-medium text-[var(--color-ink-3)] uppercase tracking-wider">Result:</span>
-                      <p className="text-[var(--text-sm)] font-bold text-[var(--color-accent)] mt-1">
-                        {hasCompletedQuestionnaire && willingToDelay ? "Absorbs 5.2 kWh surplus / day" : "Absorbs 4.5 kWh surplus / day"}
+                    <div className="mt-3 pt-2 border-t border-[var(--color-border)]">
+                      <span className="text-[9px] font-medium text-[var(--color-ink-3)] uppercase tracking-wider">Result:</span>
+                      <p className="text-[var(--text-xs)] font-bold text-[var(--color-accent)] mt-0.5">
+                        {hasCompletedQuestionnaire && willingToDelay ? "Absorbs 5.2 kWh/day" : "Absorbs 4.5 kWh/day"}
                       </p>
                     </div>
                   </div>
 
-                  <Link href="/wallet" className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-5 bg-white shadow-sm flex flex-col justify-between hover:border-[var(--color-success)] hover:bg-[#ecfdf5]/50 transition-all cursor-pointer group">
+                  <Link href="/wallet" className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-4 bg-white shadow-sm flex flex-col justify-between hover:border-[var(--color-success)] hover:bg-[#ecfdf5]/50 transition-all cursor-pointer group">
                     <div>
-                      <div className="flex items-center mb-2 justify-between">
+                      <div className="flex items-center mb-1 justify-between">
                         <div className="flex items-center">
-                          <Zap className="w-5 h-5 text-[var(--color-success)] mr-2" />
-                          <h3 className="font-bold text-[var(--text-sm)] text-[var(--color-ink)]">2. Export Surplus</h3>
+                          <Zap className="w-4 h-4 text-[var(--color-success)] mr-2" />
+                          <h3 className="font-bold text-[var(--text-xs)] text-[var(--color-ink)]">2. Export Surplus</h3>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-[var(--color-success)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                        <ChevronRight className="w-3 h-3 text-[var(--color-success)] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                       </div>
-                      <p className="text-[var(--text-sm)] text-[var(--color-ink-2)] mt-2">
-                        Send the remaining inflexible surplus back to the TNB grid and review wallet-style credit options.
+                      <p className="text-[var(--text-xs)] text-[var(--color-ink-2)] mt-1">
+                        Send inflexible surplus to the TNB grid and review credit options.
                       </p>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-[var(--color-border)]">
-                      <span className="text-[var(--text-xs)] font-medium text-[var(--color-ink-3)] uppercase tracking-wider">Result:</span>
-                      <p className="text-[var(--text-sm)] font-medium text-[var(--color-ink)] mt-1">Earns RM 0.25/kWh export credit</p>
+                    <div className="mt-3 pt-2 border-t border-[var(--color-border)]">
+                      <span className="text-[9px] font-medium text-[var(--color-ink-3)] uppercase tracking-wider">Result:</span>
+                      <p className="text-[var(--text-xs)] font-medium text-[var(--color-ink)] mt-0.5">Earns RM 0.25/kWh</p>
                     </div>
                   </Link>
 
                   {isBusiness && (
-                    <div className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-5 bg-[var(--color-paper-2)] shadow-sm flex flex-col justify-between">
+                    <div className="border border-[var(--color-border)] rounded-[var(--radius-md)] p-4 bg-[var(--color-paper-2)] shadow-sm flex flex-col justify-between">
                       <div>
-                        <div className="flex items-center mb-2">
-                          <Box className="w-5 h-5 text-[var(--color-ink-2)] mr-2" />
-                          <h3 className="font-bold text-[var(--text-sm)] text-[var(--color-ink)]">3. Branch Allocation (NOVA)</h3>
+                        <div className="flex items-center mb-1">
+                          <Box className="w-4 h-4 text-[var(--color-ink-2)] mr-2" />
+                          <h3 className="font-bold text-[var(--text-xs)] text-[var(--color-ink)]">3. Branch Allocation (NOVA)</h3>
                         </div>
-                        <p className="text-[var(--text-sm)] text-[var(--color-ink-2)]">
-                          Route export credits to designated business branches through virtual allocation.
+                        <p className="text-[var(--text-xs)] text-[var(--color-ink-2)] mt-1">
+                          Route export credits to designated branches via virtual allocation.
                         </p>
                       </div>
-                      <div className="mt-4 pt-3 border-t border-[var(--color-border)]">
-                        <span className="text-[var(--text-xs)] font-medium text-[var(--color-ink-3)] uppercase tracking-wider">Result:</span>
-                        <p className="text-[var(--text-sm)] font-medium text-[var(--color-ink)] mt-1">Offsets high-bill branches</p>
+                      <div className="mt-3 pt-2 border-t border-[var(--color-border)]">
+                        <span className="text-[9px] font-medium text-[var(--color-ink-3)] uppercase tracking-wider">Result:</span>
+                        <p className="text-[var(--text-xs)] font-medium text-[var(--color-ink)] mt-0.5">Offsets high-bill branches</p>
                       </div>
                     </div>
                   )}
@@ -214,7 +225,7 @@ export default function PassportPage() {
                   <div className="text-[var(--text-sm)] text-[var(--color-ink-2)]">
                     Use these recommendations to build a practical schedule inside the optimisation workspace.
                   </div>
-                  <Link href="/community">
+                  <Link href="/optimisation">
                     <button className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-6 py-2.5 rounded-[var(--radius-md)] text-[var(--text-sm)] font-medium shadow-sm transition-colors flex items-center">
                       Open Optimisation Hub <ArrowRight className="w-4 h-4 ml-2" />
                     </button>
