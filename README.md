@@ -51,10 +51,10 @@
 
 
 ## Build Instruction
-`cd d:\ImagineHack2026\Lega\backend`
-`pip install -r requirements.txt   # (If you have a requirements file)`
+`cd d:\ImagineHack2026\Lega\backend`<br>
+`pip install -r requirements.txt   # (If you have a requirements file)`<br>
 `python -m uvicorn main:app --reload`
 
-`cd d:\ImagineHack2026\Lega\frontend`
-`npm install    # (Only needed if you haven't installed dependencies yet)`
+`cd d:\ImagineHack2026\Lega\frontend`<br>
+`npm install    # (Only needed if you haven't installed dependencies yet)`<br>
 `npm run dev`
