@@ -35,6 +35,24 @@ type AnalysisResult = {
   };
 };
 
+function buildEssentialActionCopy(dominantDriver: string) {
+  const driver = dominantDriver.toLowerCase();
+
+  if (driver.includes("air")) {
+    return "Start with a no-cost AC reset: raise the temperature to 24C, use a fan, and clean filters before buying anything.";
+  }
+
+  if (driver.includes("water")) {
+    return "Start with a no-cost hot-water reset: shorten water-heater runtime before considering any appliance upgrade.";
+  }
+
+  if (driver.includes("refriger")) {
+    return "Start with a low-cost fridge reset: check temperature settings and airflow before replacing equipment.";
+  }
+
+  return "Start with one no-cost routine change first, then only consider paid upgrades if the bill stays high.";
+}
+
 export default function OnboardPage() {
   const router = useRouter();
   const { accountType } = useUser();
@@ -378,6 +396,48 @@ export default function OnboardPage() {
                     <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">{analysisResult?.rootCause}</p>
                   </div>
                 </div>
+
+                {analysisResult && (
+                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                    <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
+                      <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Why This Recommendation</p>
+                      <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">
+                        We ranked this action highest because it is the fastest path to lowering next month&apos;s bill.
+                      </p>
+                      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        <div className="rounded-[var(--radius-md)] bg-[var(--color-paper-2)] p-3">
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Tariff Trigger</p>
+                          <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink)]">
+                            {analysisResult.diagnosis.kwhToNextCheaperTier} kWh away from the cheaper tier
+                          </p>
+                        </div>
+                        <div className="rounded-[var(--radius-md)] bg-[var(--color-paper-2)] p-3">
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Benchmark Gap</p>
+                          <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink)]">
+                            {Math.abs(analysisResult.diagnosis.benchmarkDeltaPercent)}% {analysisResult.diagnosis.benchmarkDeltaPercent > 0 ? "above" : "below"} similar homes
+                          </p>
+                        </div>
+                        <div className="rounded-[var(--radius-md)] bg-[var(--color-paper-2)] p-3">
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Primary Driver</p>
+                          <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink)]">
+                            {analysisResult.diagnosis.dominantDriver}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[var(--radius-lg)] border border-[var(--color-success)] bg-[#f0fdf4] p-5 shadow-sm">
+                      <p className="text-[10px] uppercase tracking-wider text-[#166534]">Essential Savings Mode</p>
+                      <p className="mt-2 text-[var(--text-base)] font-bold text-[var(--color-ink)]">
+                        RM {Math.max(analysisResult.diagnosis.potentialSavingsTo300, analysisResult.estimatedMonthlySavingsRm)}/mo at risk
+                      </p>
+                      <p className="mt-2 text-[var(--text-sm)] text-[var(--color-ink-2)]">
+                        {buildEssentialActionCopy(analysisResult.diagnosis.dominantDriver)}
+                      </p>
+                      <p className="mt-3 text-[10px] uppercase tracking-wider text-[#166534]">Start with the no-cost action before buying equipment</p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="bg-white rounded-[var(--radius-lg)] border border-[var(--color-success)] shadow-sm p-6 space-y-4">
                   <div className="flex items-start">

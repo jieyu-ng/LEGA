@@ -19,6 +19,48 @@ import {
 } from "@/lib/extraction-telemetry";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
+function buildEssentialSavingsAction(record: MonthlyInsightRecord) {
+  const driver = record.dominantDriver.toLowerCase();
+
+  if (driver.includes("air")) {
+    return {
+      title: "Raise AC settings before buying anything",
+      summary: "Try 24C first, pair it with a fan, and clean filters before making a hardware purchase.",
+      cost: "No-cost first step",
+    };
+  }
+
+  if (driver.includes("water")) {
+    return {
+      title: "Trim water-heater time",
+      summary: "Shorter heater use is usually the fastest zero-cost move when hot water is driving the bill.",
+      cost: "No-cost first step",
+    };
+  }
+
+  if (driver.includes("refriger")) {
+    return {
+      title: "Tune fridge efficiency first",
+      summary: "Check temperature settings and airflow around the fridge before replacing the appliance.",
+      cost: "Low-cost first step",
+    };
+  }
+
+  return {
+    title: "Start with one no-cost routine change",
+    summary: "Shift the highest-usage daily habit first before considering any paid upgrade.",
+    cost: "No-cost first step",
+  };
+}
+
+function buildRecommendationReasons(record: MonthlyInsightRecord) {
+  return [
+    `You are ${record.kwhToNextCheaperTier} kWh away from the cheaper 300 kWh tariff threshold.`,
+    `Your home is ${Math.abs(record.benchmarkDeltaPercent)}% ${record.benchmarkDeltaPercent > 0 ? "above" : "below"} similar households on current usage.`,
+    `${record.dominantDriver} looks like the strongest bill driver right now.`,
+  ];
+}
+
 export default function Home() {
   const router = useRouter();
   const { accountType } = useUser();
@@ -271,6 +313,11 @@ export default function Home() {
     total_amount_rm: "total amount",
     billing_days: "billing days",
   };
+  const monthlySavingsAtRisk = latestRecord
+    ? Math.max(latestRecord.potentialSavingsTo300, latestRecord.estimatedMonthlySavingsRm)
+    : null;
+  const essentialSavingsAction = latestRecord ? buildEssentialSavingsAction(latestRecord) : null;
+  const recommendationReasons = latestRecord ? buildRecommendationReasons(latestRecord) : [];
 
   const downloadTelemetryExport = () => {
     const blob = new Blob([exportExtractionTelemetryJson()], { type: "application/json" });
@@ -298,7 +345,7 @@ export default function Home() {
 
         {accountType === "individual" && latestRecord && (
           <div className="max-w-5xl mx-auto space-y-4 text-left pt-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
                 <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Monthly Progress</p>
                 <p className="mt-2 text-[var(--text-lg)] font-bold text-[var(--color-ink)]">
@@ -311,20 +358,21 @@ export default function Home() {
                 </p>
               </div>
               <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
-                <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Tariff Threshold</p>
+                <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Monthly Savings At Risk</p>
                 <p className="mt-2 text-[var(--text-lg)] font-bold text-[var(--color-ink)]">
-                  {latestRecord.kwhToNextCheaperTier} kWh away
+                  RM {monthlySavingsAtRisk}/mo
                 </p>
                 <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)] leading-relaxed">
-                  Reduce roughly {Math.min(latestRecord.kwhToNextCheaperTier, 40)} kWh first to move closer to the cheaper domestic tier.
+                  You are {latestRecord.kwhToNextCheaperTier} kWh away from the cheaper domestic tier, so a small reduction can save faster.
                 </p>
               </div>
               <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
-                <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Best Action Saved</p>
+                <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Essential Savings Mode</p>
                 <p className="mt-2 text-[var(--text-lg)] font-bold text-[var(--color-ink)]">
-                  RM {latestRecord.estimatedMonthlySavingsRm}/mo potential
+                  {essentialSavingsAction?.title}
                 </p>
-                <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)] leading-relaxed">{latestRecord.recommendation}</p>
+                <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)] leading-relaxed">{essentialSavingsAction?.summary}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-wider text-[var(--color-success)]">{essentialSavingsAction?.cost}</p>
               </div>
               <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
                 <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Energy Score</p>
@@ -336,6 +384,20 @@ export default function Home() {
                     ? "This is your first saved score."
                     : `${scoreDelta > 0 ? "+" : ""}${scoreDelta} vs last bill, including action follow-through.`}
                 </p>
+              </div>
+            </div>
+
+            <div className="rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white p-5 shadow-sm">
+              <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Why This Recommendation</p>
+              <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)]">
+                EnergiKita is prioritising this action because it gives the highest savings-to-effort ratio for your current bill.
+              </p>
+              <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                {recommendationReasons.map((reason) => (
+                  <div key={reason} className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-paper-2)] p-4">
+                    <p className="text-[var(--text-sm)] text-[var(--color-ink)]">{reason}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
