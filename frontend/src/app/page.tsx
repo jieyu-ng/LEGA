@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, Check, FileJson, TrendingUp } from "lucide-react";
+import { UploadCloud, Check, FileJson, CalendarDays, Banknote, Gauge, Clock3 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import {
   loadMonthlyHistory,
@@ -693,7 +693,7 @@ export default function Home() {
                 <div className="px-6 py-4 border-b border-[var(--color-border)] bg-[var(--color-paper-2)] flex items-center justify-between">
                   <h3 className="font-semibold text-[var(--text-sm)] text-[var(--color-ink)] flex items-center">
                     <FileJson className="w-4 h-4 mr-2 text-[var(--color-ink-3)]" />
-                    Reviewed Bill Data
+                    Bill Summary
                   </h3>
                   <div className="flex flex-wrap items-center justify-end gap-2">
                     <div className="flex items-center text-[var(--text-xs)] font-medium text-[var(--color-ink)] px-2 py-1 bg-white rounded-md border border-[var(--color-border)]">
@@ -706,55 +706,118 @@ export default function Home() {
                 </div>
 
                 {Array.isArray(extractedData?.extraction_notes) && extractedData.extraction_notes.length > 0 && (
-                  <div className="px-6 py-4 border-b border-[var(--color-border)] bg-white space-y-2">
-                    <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Extraction Notes</p>
-                    {extractedData.extraction_notes.map((note: string, index: number) => (
-                      <p key={`${note}-${index}`} className="text-[var(--text-xs)] text-[var(--color-ink-2)]">
-                        {note}
+                  <div className="px-6 py-4 border-b border-[var(--color-border)] bg-[var(--color-paper-2)] space-y-3">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">What We Found On Your Bill</p>
+                      <p className="mt-1 text-[var(--text-sm)] text-[var(--color-ink-2)]">
+                        We reviewed the uploaded bill and pulled the key details below for you to verify before continuing.
                       </p>
+                    </div>
+                    {extractedData.extraction_notes.map((note: string, index: number) => (
+                      <div key={`${note}-${index}`} className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white px-4 py-3">
+                        <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">
+                          {note}
+                        </p>
+                      </div>
                     ))}
                   </div>
                 )}
                 
-                <div className="p-6 bg-[var(--color-paper-3)] text-[var(--color-ink)] font-mono text-[var(--text-sm)] overflow-x-auto border-t border-[var(--color-border)]">
-                  <pre>
-{JSON.stringify(extractedData, null, 2)}
-                  </pre>
-                </div>
-              </div>
-
-              {accountType === "business" && (
-                <div className="bg-white rounded-[var(--radius-lg)] border border-[#fca5a5] shadow-sm overflow-hidden relative mt-6">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-[#ef4444]"></div>
-                  <div className="p-6 pl-8">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-bold text-[var(--text-base)] text-[var(--color-ink)] flex items-center">
-                          <TrendingUp className="w-5 h-5 mr-2 text-[#ef4444]" />
-                          Unusual Usage Spiked Detected
-                        </h3>
-                        <p className="text-[var(--text-sm)] text-[var(--color-ink-2)] mt-1">
-                          Your electricity usage has spiked recently compared to your normal habits.
-                        </p>
+                <div className="p-6 space-y-6 bg-white border-t border-[var(--color-border)]">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-paper-2)] p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
+                          <CalendarDays className="w-4 h-4 text-[var(--color-ink-2)]" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Billing Month</p>
+                          <p className="mt-1 text-[var(--text-base)] font-bold text-[var(--color-ink)]">{extractedData.billing_month || "-"}</p>
+                        </div>
                       </div>
-                      <span className="inline-flex items-center text-[var(--text-xs)] font-bold text-[#b91c1c] bg-[#fee2e2] px-2.5 py-1 rounded-md uppercase tracking-wider">
-                        Requires Attention
-                      </span>
                     </div>
-                    
-                    <div className="mt-4 grid grid-cols-2 gap-4">
-                      <div className="bg-[var(--color-paper-2)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
-                        <p className="text-[var(--text-xs)] text-[var(--color-ink-3)] font-medium uppercase tracking-wider">Usage Increase</p>
-                        <p className="text-[var(--text-lg)] font-bold text-[var(--color-ink)]">{accountType === "business" ? "+18.6%" : "+21.4%"}</p>
+
+                    <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-paper-2)] p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
+                          <Banknote className="w-4 h-4 text-[var(--color-accent)]" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Total Amount</p>
+                          <p className="mt-1 text-[var(--text-base)] font-bold text-[var(--color-accent)]">
+                            {typeof extractedData.total_amount_rm === "number" ? `RM ${extractedData.total_amount_rm.toFixed(2)}` : "-"}
+                          </p>
+                        </div>
                       </div>
-                      <div className="bg-[var(--color-paper-2)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
-                        <p className="text-[var(--text-xs)] text-[var(--color-ink-3)] font-medium uppercase tracking-wider">Your Normal Usage</p>
-                        <p className="text-[var(--text-lg)] font-bold text-[var(--color-ink)]">{accountType === "business" ? "1197 kWh" : "480 kWh"}</p>
+                    </div>
+
+                    <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-paper-2)] p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
+                          <Gauge className="w-4 h-4 text-[var(--color-ink)]" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Consumption</p>
+                          <p className="mt-1 text-[var(--text-base)] font-bold text-[var(--color-ink)]">
+                            {typeof extractedData.consumption_kwh === "number" ? `${extractedData.consumption_kwh} kWh` : "-"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-paper-2)] p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
+                          <Clock3 className="w-4 h-4 text-[var(--color-ink-2)]" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Billing Days</p>
+                          <p className="mt-1 text-[var(--text-base)] font-bold text-[var(--color-ink)]">
+                            {typeof extractedData.billing_days === "number" ? `${extractedData.billing_days} days` : "-"}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {(typeof extractedData.peak_usage_kwh === "number" && typeof extractedData.off_peak_usage_kwh === "number") ||
+                  (Array.isArray(extractedData.inferred_equipment) && extractedData.inferred_equipment.length > 0) ? (
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      {typeof extractedData.peak_usage_kwh === "number" && typeof extractedData.off_peak_usage_kwh === "number" && (
+                        <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-4">
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Usage Breakdown</p>
+                          <div className="mt-4 grid grid-cols-2 gap-3">
+                            <div className="rounded-[var(--radius-md)] bg-[var(--color-paper-2)] p-3">
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">Peak Usage</p>
+                              <p className="mt-1 text-[var(--text-base)] font-bold text-[var(--color-ink)]">{extractedData.peak_usage_kwh} kWh</p>
+                            </div>
+                            <div className="rounded-[var(--radius-md)] bg-[var(--color-paper-2)] p-3">
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">Off-Peak Usage</p>
+                              <p className="mt-1 text-[var(--text-base)] font-bold text-[var(--color-ink)]">{extractedData.off_peak_usage_kwh} kWh</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {Array.isArray(extractedData.inferred_equipment) && extractedData.inferred_equipment.length > 0 && (
+                        <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-4">
+                          <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">Detected Equipment Pattern</p>
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {extractedData.inferred_equipment.map((equipment: string, index: number) => (
+                              <span
+                                key={`${equipment}-${index}`}
+                                className="inline-flex items-center px-2.5 py-1 rounded-md text-[var(--text-xs)] font-medium bg-[var(--color-paper-2)] text-[var(--color-ink)] border border-[var(--color-border)]"
+                              >
+                                {equipment}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
-              )}
+              </div>
 
               <div className="flex justify-end pt-2">
                 <button 
