@@ -2,7 +2,7 @@
 
 ## An AI-Orchestrated Bill-to-Flexibility Platform for Malaysian SMEs and Community Energy Operators
 
-> **Turn every SME electricity bill into an actionable Energy Flexibility Passport.**
+> **The platform transforms existing electricity bills, basic business information and optional interval data into an Energy Flexibility Passport.**
 
 ## Team Information
 
