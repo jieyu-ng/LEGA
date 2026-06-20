@@ -1,0 +1,35 @@
+{
+  "total_surplus_kwh": 45.2,
+  "advisory_summary": "Based on your goal to prioritize the highest bill, the AI has routed the majority of your surplus to Branch B (City Center) which currently faces peak commercial tariff rates.",
+  "branches": [
+    {
+      "id": "HQ",
+      "name": "Main Laundry Hub",
+      "current_load_kwh": 120,
+      "allocated_surplus_kwh": 5.2,
+      "savings_rm": 2.60,
+      "status": "Self-Sustaining",
+      "notes": "Base operations covered. Small allocation for buffer."
+    },
+    {
+      "id": "B1",
+      "name": "Branch B (City Center)",
+      "current_load_kwh": 85,
+      "allocated_surplus_kwh": 30.0,
+      "savings_rm": 18.00,
+      "status": "Priority Offset",
+      "notes": "High tariff zone. Maximum virtual allocation applied."
+    },
+    {
+      "id": "B2",
+      "name": "Branch C (Subang)",
+      "current_load_kwh": 45,
+      "allocated_surplus_kwh": 10.0,
+      "savings_rm": 4.50,
+      "status": "Partial Offset",
+      "notes": "Low impact zone. Minor allocation."
+    }
+  ],
+  "total_savings_rm": 25.10,
+  "environmental_impact_co2_kg": 28.5
+}

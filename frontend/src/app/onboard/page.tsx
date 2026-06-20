@@ -58,6 +58,16 @@ export default function OnboardPage() {
   const { accountType } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [qStep, setQStep] = useState(1);
+
+  // Business Energy Context States
+  const [bizConsumption, setBizConsumption] = useState<number>(12000);
+  const [bizMaxDemand, setBizMaxDemand] = useState<number>(45);
+  const [bizPowerFactor, setBizPowerFactor] = useState<number>(0.85);
+  const [bizOccupancy, setBizOccupancy] = useState("standard");
+  const [bizEquipment, setBizEquipment] = useState("Servers, HVAC, Desktop PCs");
+  const [bizBms, setBizBms] = useState("none");
+  const [bizFlexibility, setBizFlexibility] = useState("strict");
+  const [bizWeatherSense, setBizWeatherSense] = useState("high");
   const [billKwh, setBillKwh] = useState(474);
   const [billingDays, setBillingDays] = useState(31);
   const [occupantCount, setOccupantCount] = useState(4);
@@ -152,42 +162,7 @@ export default function OnboardPage() {
   return (
     <div className="flex flex-col items-center pt-16 pb-32 px-6">
       <div className="max-w-[var(--content-width)] w-full max-w-2xl space-y-8">
-        {accountType === "business" && (
-          <div className="bg-[var(--color-paper-2)] rounded-[var(--radius-lg)] border border-[var(--color-border)] p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[var(--text-base)] font-bold text-[var(--color-ink)] flex items-center">
-                <Cpu className="w-5 h-5 mr-2 text-[var(--color-accent)]" />
-                Equipment Pattern Review
-              </h2>
-              <span className="inline-flex items-center text-[var(--text-xs)] font-medium text-[var(--color-ink-2)] bg-[var(--color-paper-3)] px-2 py-0.5 rounded border border-[var(--color-border)]">
-                Confidence: 0.71
-              </span>
-            </div>
 
-            <div className="bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] p-4">
-              <p className="text-[var(--text-sm)] text-[var(--color-ink)] font-medium mb-3">
-                Probable contributor: <span className="text-[var(--color-accent)]">Air conditioning / continuous refrigeration</span>
-              </p>
-              <div className="space-y-2">
-                <p className="text-[var(--text-xs)] font-bold text-[var(--color-ink-3)] uppercase tracking-wider">Evidence Trail</p>
-                <ul className="space-y-1.5">
-                  <li className="flex items-start text-[var(--text-sm)] text-[var(--color-ink-2)]">
-                    <CheckCircle2 className="w-4 h-4 mr-2 text-[var(--color-success)] flex-shrink-0 mt-0.5" />
-                    Long operating hours inferred from base load.
-                  </li>
-                  <li className="flex items-start text-[var(--text-sm)] text-[var(--color-ink-2)]">
-                    <CheckCircle2 className="w-4 h-4 mr-2 text-[var(--color-success)] flex-shrink-0 mt-0.5" />
-                    High daytime load assumption matches commercial cooling profile.
-                  </li>
-                  <li className="flex items-start text-[var(--text-sm)] text-[var(--color-ink-2)]">
-                    <CheckCircle2 className="w-4 h-4 mr-2 text-[var(--color-success)] flex-shrink-0 mt-0.5" />
-                    Usage spike (+18.6%) compared with previous month correlates with recent temperature increases.
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
 
         {accountType === "business" ? (
           <>
@@ -211,16 +186,70 @@ export default function OnboardPage() {
                   </div>
                 )}
 
-                <div>
-                  <h3 className="text-[var(--text-sm)] font-bold text-[var(--color-ink)] mb-4 pb-2 border-b border-[var(--color-border)]">Operating Constraints</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Primary Equipment</label>
-                      <input type="text" defaultValue="Air Conditioning & Dryers" className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all" />
+                <div className="space-y-5">
+                  <div>
+                    <h3 className="text-[var(--text-sm)] font-bold text-[var(--color-ink)] mb-4 pb-2 border-b border-[var(--color-border)]">1. Utility Bill Data (Financial & Usage Foundation)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-2">
+                        <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Total Monthly Consumption (kWh)</label>
+                        <input type="number" value={bizConsumption} onChange={(e) => setBizConsumption(Number(e.target.value))} className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Maximum Demand (kW)</label>
+                        <input type="number" value={bizMaxDemand} onChange={(e) => setBizMaxDemand(Number(e.target.value))} className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Power Factor</label>
+                        <input type="number" step="0.01" value={bizPowerFactor} onChange={(e) => setBizPowerFactor(Number(e.target.value))} className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all" />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Flexible Equipment</label>
-                      <input type="text" defaultValue="Washing cycles (1-2 hour delay ok)" className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all" />
+                  </div>
+
+                  <div>
+                    <h3 className="text-[var(--text-sm)] font-bold text-[var(--color-ink)] mb-4 pb-2 border-b border-[var(--color-border)]">2. Operational & Infrastructure Data (Root Cause)</h3>
+                    <div className="grid grid-cols-1 gap-6">
+                      <div className="space-y-2">
+                        <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Occupancy Schedule</label>
+                        <select value={bizOccupancy} onChange={(e) => setBizOccupancy(e.target.value)} className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all">
+                          <option value="standard">Standard Office Hours (9am - 6pm)</option>
+                          <option value="shift">Shift Work (extended hours)</option>
+                          <option value="247">24/7 Operations</option>
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Major Equipment Inventory (e.g. Server Racks, HVAC, Desktop PCs)</label>
+                        <input type="text" value={bizEquipment} onChange={(e) => setBizEquipment(e.target.value)} className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Building Management System (BMS)</label>
+                        <select value={bizBms} onChange={(e) => setBizBms(e.target.value)} className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all">
+                          <option value="integrated">Yes, fully integrated (Real-time tracking)</option>
+                          <option value="partial">Partial (Some standalone sensors)</option>
+                          <option value="none">None (Manual control only)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-[var(--text-sm)] font-bold text-[var(--color-ink)] mb-4 pb-2 border-b border-[var(--color-border)]">3. Contextual Data (External Influences)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Operations Flexibility</label>
+                        <select value={bizFlexibility} onChange={(e) => setBizFlexibility(e.target.value)} className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all">
+                          <option value="shiftable">High (Can easily shift high-intensity loads to off-peak)</option>
+                          <option value="strict">Strict (Tied strictly to daytime business hours)</option>
+                          <option value="unpredictable">Unpredictable (Ad-hoc usage)</option>
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Weather/Cooling Sensitivity</label>
+                        <select value={bizWeatherSense} onChange={(e) => setBizWeatherSense(e.target.value)} className="w-full bg-white border border-[var(--color-border)] rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-ink)] focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all">
+                          <option value="high">High (Cooling makes up &gt;50% of the bill)</option>
+                          <option value="moderate">Moderate</option>
+                          <option value="low">Low (Mainly equipment/server loads)</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
