@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Cpu, CheckCircle2 } from "lucide-react";
+import { Cpu, CheckCircle2, UploadCloud } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { loadLatestBill, loadMonthlyHistory, saveMonthlyInsight } from "@/lib/energy-memory";
 
@@ -82,6 +82,9 @@ export default function OnboardPage() {
   const [heaterHours, setHeaterHours] = useState(2);
   const [lightingType, setLightingType] = useState("mostly-led");
   const [cookingType, setCookingType] = useState("induction");
+  const [acModelImageName, setAcModelImageName] = useState("");
+  const [fridgeLabelImageName, setFridgeLabelImageName] = useState("");
+  const [heaterModelImageName, setHeaterModelImageName] = useState("");
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [analysisError, setAnalysisError] = useState("");
 
@@ -392,6 +395,76 @@ export default function OnboardPage() {
                             <option value="mixed">Mixed</option>
                           </select>
                         </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-[var(--text-sm)] font-bold text-[var(--color-ink)] mb-4 pb-2 border-b border-[var(--color-border)]">
+                        Optional Appliance Model Uploads
+                      </h3>
+                      <p className="text-[var(--text-sm)] text-[var(--color-ink-2)] mb-4">
+                        Add appliance label photos to make the workflow feel more complete during the demo. These uploads are optional.
+                      </p>
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => setAcModelImageName(e.target.files?.[0]?.name ?? "")}
+                          />
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
+                              <UploadCloud className="w-4 h-4 text-[var(--color-success)]" />
+                            </div>
+                            <div>
+                              <p className="text-[var(--text-sm)] font-medium text-[var(--color-ink)]">AC model label</p>
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">
+                                {acModelImageName || "Upload outdoor or indoor unit label"}
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+
+                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => setFridgeLabelImageName(e.target.files?.[0]?.name ?? "")}
+                          />
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
+                              <UploadCloud className="w-4 h-4 text-[var(--color-success)]" />
+                            </div>
+                            <div>
+                              <p className="text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Fridge energy label</p>
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">
+                                {fridgeLabelImageName || "Upload energy sticker or model tag"}
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+
+                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => setHeaterModelImageName(e.target.files?.[0]?.name ?? "")}
+                          />
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
+                              <UploadCloud className="w-4 h-4 text-[var(--color-success)]" />
+                            </div>
+                            <div>
+                              <p className="text-[var(--text-sm)] font-medium text-[var(--color-ink)]">Water-heater model</p>
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">
+                                {heaterModelImageName || "Upload heater label or front panel"}
+                              </p>
+                            </div>
+                          </div>
+                        </label>
                       </div>
                     </div>
                   </div>
