@@ -1,0 +1,12 @@
+<svg width="900" height="560" viewBox="0 0 900 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="560" rx="28" fill="#F8FAFC"/>
+  <rect x="44" y="44" width="812" height="472" rx="24" fill="white" stroke="#CBD5E1" stroke-width="2"/>
+  <text x="88" y="118" fill="#0F172A" font-family="Arial, sans-serif" font-size="34" font-weight="700">Instant Water Heater Label</text>
+  <text x="88" y="174" fill="#334155" font-family="Arial, sans-serif" font-size="24">Brand: Joven</text>
+  <text x="88" y="220" fill="#334155" font-family="Arial, sans-serif" font-size="24">Model: SA10E</text>
+  <text x="88" y="266" fill="#334155" font-family="Arial, sans-serif" font-size="24">Power Rating: 3.6 kW</text>
+  <text x="88" y="312" fill="#334155" font-family="Arial, sans-serif" font-size="24">Voltage: 240V ~ 50Hz</text>
+  <text x="88" y="358" fill="#334155" font-family="Arial, sans-serif" font-size="24">Water Pressure: 0.1 - 0.3 MPa</text>
+  <rect x="88" y="398" width="248" height="66" rx="14" fill="#FFF7ED" stroke="#F97316"/>
+  <text x="118" y="440" fill="#9A3412" font-family="Arial, sans-serif" font-size="24" font-weight="700">Instant Heater</text>
+</svg>

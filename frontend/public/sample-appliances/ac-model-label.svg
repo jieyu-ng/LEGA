@@ -1,0 +1,12 @@
+<svg width="900" height="560" viewBox="0 0 900 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="560" rx="28" fill="#F8FAFC"/>
+  <rect x="44" y="44" width="812" height="472" rx="24" fill="white" stroke="#CBD5E1" stroke-width="2"/>
+  <text x="88" y="118" fill="#0F172A" font-family="Arial, sans-serif" font-size="34" font-weight="700">Split Air Conditioner Label</text>
+  <text x="88" y="174" fill="#334155" font-family="Arial, sans-serif" font-size="24">Brand: Panasonic</text>
+  <text x="88" y="220" fill="#334155" font-family="Arial, sans-serif" font-size="24">Model: CS-XPU13XKH-1</text>
+  <text x="88" y="266" fill="#334155" font-family="Arial, sans-serif" font-size="24">Cooling Capacity: 3.5 kW</text>
+  <text x="88" y="312" fill="#334155" font-family="Arial, sans-serif" font-size="24">Input Power: 920 W</text>
+  <text x="88" y="358" fill="#334155" font-family="Arial, sans-serif" font-size="24">Energy Rating: 4 Star</text>
+  <rect x="88" y="398" width="240" height="66" rx="14" fill="#ECFDF5" stroke="#10B981"/>
+  <text x="118" y="440" fill="#065F46" font-family="Arial, sans-serif" font-size="24" font-weight="700">Inverter Cooling</text>
+</svg>

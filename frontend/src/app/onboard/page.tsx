@@ -37,6 +37,16 @@ type AnalysisResult = {
   };
 };
 
+type ApplianceExtractionResult = {
+  applianceType: string;
+  brand: string | null;
+  model: string | null;
+  energyRating: string | null;
+  estimatedPower: string | null;
+  summary: string;
+  confidence: number;
+};
+
 function buildEssentialActionCopy(dominantDriver: string) {
   const driver = dominantDriver.toLowerCase();
 
@@ -85,6 +95,10 @@ export default function OnboardPage() {
   const [acModelImageName, setAcModelImageName] = useState("");
   const [fridgeLabelImageName, setFridgeLabelImageName] = useState("");
   const [heaterModelImageName, setHeaterModelImageName] = useState("");
+  const [acModelInsight, setAcModelInsight] = useState<ApplianceExtractionResult | null>(null);
+  const [fridgeModelInsight, setFridgeModelInsight] = useState<ApplianceExtractionResult | null>(null);
+  const [heaterModelInsight, setHeaterModelInsight] = useState<ApplianceExtractionResult | null>(null);
+  const [activeUpload, setActiveUpload] = useState<"ac" | "fridge" | "heater" | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [analysisError, setAnalysisError] = useState("");
 
@@ -96,6 +110,59 @@ export default function OnboardPage() {
       setBillingDays(latestBill.billingDays);
     }
   }, []);
+
+  const useSampleAppliance = async (
+    applianceType: "ac" | "fridge" | "heater",
+    samplePath: string,
+    filename: string
+  ) => {
+    try {
+      const response = await fetch(samplePath);
+      const blob = await response.blob();
+      const file = new File([blob], filename, { type: blob.type || "image/svg+xml" });
+      await handleApplianceUpload(applianceType, file);
+    } catch {
+      setAnalysisError("Unable to load the sample appliance label right now.");
+    }
+  };
+
+  const handleApplianceUpload = async (
+    applianceType: "ac" | "fridge" | "heater",
+    file: File | undefined
+  ) => {
+    if (!file) return;
+
+    if (applianceType === "ac") setAcModelImageName(file.name);
+    if (applianceType === "fridge") setFridgeLabelImageName(file.name);
+    if (applianceType === "heater") setHeaterModelImageName(file.name);
+
+    setActiveUpload(applianceType);
+    setAnalysisError("");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("applianceType", applianceType);
+
+    try {
+      const response = await fetch("/api/appliance-extract", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to read this appliance label.");
+      }
+
+      if (applianceType === "ac") setAcModelInsight(data);
+      if (applianceType === "fridge") setFridgeModelInsight(data);
+      if (applianceType === "heater") setHeaterModelInsight(data);
+    } catch (error) {
+      setAnalysisError(error instanceof Error ? error.message : "Unable to read this appliance label.");
+    } finally {
+      setActiveUpload(null);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -483,12 +550,12 @@ export default function OnboardPage() {
                         Add appliance label photos to make the workflow feel more complete during the demo. These uploads are optional.
                       </p>
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors">
+                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors space-y-3">
                           <input
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={(e) => setAcModelImageName(e.target.files?.[0]?.name ?? "")}
+                            onChange={(e) => void handleApplianceUpload("ac", e.target.files?.[0])}
                           />
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
@@ -501,14 +568,39 @@ export default function OnboardPage() {
                               </p>
                             </div>
                           </div>
+                          <div className="rounded-[var(--radius-sm)] bg-white border border-[var(--color-border)] px-3 py-2">
+                            {activeUpload === "ac" ? (
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">Reading AC label with Grafilab vision...</p>
+                            ) : acModelInsight ? (
+                              <>
+                                <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">AI Read</p>
+                                <p className="mt-1 text-[var(--text-xs)] text-[var(--color-ink)]">
+                                  {[acModelInsight.brand, acModelInsight.model].filter(Boolean).join(" ") || "Model not clearly visible"}
+                                </p>
+                                <p className="mt-1 text-[var(--text-xs)] text-[var(--color-ink-2)]">{acModelInsight.summary}</p>
+                              </>
+                            ) : (
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">Brand, model, and efficiency details will appear here.</p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              void useSampleAppliance("ac", "/sample-appliances/ac-model-label.svg", "sample-ac-label.svg");
+                            }}
+                            className="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-3 py-2 text-[var(--text-xs)] font-medium text-[var(--color-ink)] hover:bg-[var(--color-paper-2)] transition-colors"
+                          >
+                            Use sample AC label
+                          </button>
                         </label>
 
-                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors">
+                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors space-y-3">
                           <input
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={(e) => setFridgeLabelImageName(e.target.files?.[0]?.name ?? "")}
+                            onChange={(e) => void handleApplianceUpload("fridge", e.target.files?.[0])}
                           />
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
@@ -521,14 +613,39 @@ export default function OnboardPage() {
                               </p>
                             </div>
                           </div>
+                          <div className="rounded-[var(--radius-sm)] bg-white border border-[var(--color-border)] px-3 py-2">
+                            {activeUpload === "fridge" ? (
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">Reading fridge label with Grafilab vision...</p>
+                            ) : fridgeModelInsight ? (
+                              <>
+                                <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">AI Read</p>
+                                <p className="mt-1 text-[var(--text-xs)] text-[var(--color-ink)]">
+                                  {[fridgeModelInsight.brand, fridgeModelInsight.model].filter(Boolean).join(" ") || "Model not clearly visible"}
+                                </p>
+                                <p className="mt-1 text-[var(--text-xs)] text-[var(--color-ink-2)]">{fridgeModelInsight.summary}</p>
+                              </>
+                            ) : (
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">Brand, model, and energy label details will appear here.</p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              void useSampleAppliance("fridge", "/sample-appliances/fridge-energy-label.svg", "sample-fridge-label.svg");
+                            }}
+                            className="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-3 py-2 text-[var(--text-xs)] font-medium text-[var(--color-ink)] hover:bg-[var(--color-paper-2)] transition-colors"
+                          >
+                            Use sample fridge label
+                          </button>
                         </label>
 
-                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors">
+                        <label className="group rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] bg-[var(--color-paper-2)] p-4 cursor-pointer hover:border-[var(--color-success)] hover:bg-[#f0fdf4] transition-colors space-y-3">
                           <input
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={(e) => setHeaterModelImageName(e.target.files?.[0]?.name ?? "")}
+                            onChange={(e) => void handleApplianceUpload("heater", e.target.files?.[0])}
                           />
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[var(--color-border)]">
@@ -541,6 +658,31 @@ export default function OnboardPage() {
                               </p>
                             </div>
                           </div>
+                          <div className="rounded-[var(--radius-sm)] bg-white border border-[var(--color-border)] px-3 py-2">
+                            {activeUpload === "heater" ? (
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">Reading water-heater label with Grafilab vision...</p>
+                            ) : heaterModelInsight ? (
+                              <>
+                                <p className="text-[10px] uppercase tracking-wider text-[var(--color-ink-3)]">AI Read</p>
+                                <p className="mt-1 text-[var(--text-xs)] text-[var(--color-ink)]">
+                                  {[heaterModelInsight.brand, heaterModelInsight.model].filter(Boolean).join(" ") || "Model not clearly visible"}
+                                </p>
+                                <p className="mt-1 text-[var(--text-xs)] text-[var(--color-ink-2)]">{heaterModelInsight.summary}</p>
+                              </>
+                            ) : (
+                              <p className="text-[var(--text-xs)] text-[var(--color-ink-2)]">Brand, model, and capacity details will appear here.</p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              void useSampleAppliance("heater", "/sample-appliances/water-heater-label.svg", "sample-water-heater-label.svg");
+                            }}
+                            className="w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-3 py-2 text-[var(--text-xs)] font-medium text-[var(--color-ink)] hover:bg-[var(--color-paper-2)] transition-colors"
+                          >
+                            Use sample heater label
+                          </button>
                         </label>
                       </div>
                     </div>
