@@ -33,7 +33,6 @@ export function Nav() {
               <>
                 <Link href="/upload" className={getLinkClass("/upload")}>Bill Upload</Link>
                 <Link href="/passport" className={getLinkClass("/passport")}>Energy Passport</Link>
-                <Link href="/community" className={getLinkClass("/community")}>Optimisation Hub</Link>
               </>
             )}
 
@@ -41,7 +40,6 @@ export function Nav() {
               <>
                 <Link href="/upload" className={getLinkClass("/upload")}>Bill Upload</Link>
                 <Link href="/passport" className={getLinkClass("/passport")}>Energy Passport</Link>
-                <Link href="/community" className={getLinkClass("/community")}>Savings Hub</Link>
               </>
             )}
           </div>

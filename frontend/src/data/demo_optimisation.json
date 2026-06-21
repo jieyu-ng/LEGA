@@ -28,6 +28,15 @@
       "savings_rm": 4.50,
       "status": "Partial Offset",
       "notes": "Low impact zone. Minor allocation."
+    },
+    {
+      "id": "B3",
+      "name": "Branch D",
+      "current_load_kwh": 10,
+      "allocated_surplus_kwh": 0.0,
+      "savings_rm": 0.00,
+      "status": "No Offset Needed",
+      "notes": "Low base load. No virtual allocation required."
     }
   ],
   "total_savings_rm": 25.10,
